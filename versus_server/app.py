@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 
-from Versus.Classes import DefaultError, Game
+from versus_server.Classes import DefaultError, Game
 
 app = Flask(__name__)
 games = []
