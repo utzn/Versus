@@ -23,7 +23,10 @@ class Game:
     players = []
 
     def add_player(self, name, pin):
-        if len(self.players) < 2:
-            self.players.append({name: pin})
         if len(self.players) == 2:
+            raise DefaultError("Game " + self.game_id + " is already full!")
+        if len(self.players) == 1:
+            self.players.append({name, pin})
             random.shuffle(self.players)
+        if len(self.players) == 0:
+            self.players.append({name: pin})

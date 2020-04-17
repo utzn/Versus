@@ -23,7 +23,6 @@ def new_game():
     new_game_id = request.args.get("id")
     name = request.args.get("name")
     pin = request.args.get("pin")
-    print(new_game_id, name, pin)
     if not (name and pin):
         raise DefaultError(message="Please provide a valid name and PIN combination.", status_code=401)
     if new_game_id is None:
@@ -38,7 +37,8 @@ def new_game():
                 break
             else:
                 raise DefaultError(message="Please provide a valid game ID.", status_code=404)
-        return "Game created successfully"
+        print(games)
+        return str(0)
 
 
 @app.route("/move", methods=["POST"])
