@@ -6,6 +6,12 @@ app = Flask(__name__)
 games = []
 
 
+def find_game(game_id) -> Game:
+    for game in games:
+        if game.game_id == game_id:
+            return game
+
+
 @app.errorhandler(DefaultError)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
@@ -45,14 +51,14 @@ def new_game():
 @app.route("/move")
 def move():
     game_id = request.args.get("id")
-    move = request.args.get("move")
+    move_to_make = request.args.get("move")
     name = request.args.get("name")
     pin = request.args.get("pin")
-    for game in games:
-        if game.game_id == game_id:
-            game.move(move, name, pin)
-            return str(0)
-    raise DefaultError("Game not found!", status_code=404)
+    game = find_game(game_id)
+    if game is None:
+        raise DefaultError("Game not found!", status_code=404)
+    game.move(move_to_make, name, pin)
+    return str(game.board)
 
 
 @app.route("/getCLIboard")

@@ -33,7 +33,7 @@ class Game:
         if len(self.players) == 2:
             raise DefaultError("Game " + self.game_id + " is already full!", status_code=403)
         if len(self.players) == 1:
-            self.players.append({name, pin})
+            self.players.append({name: pin})
             random.shuffle(self.players)
         if len(self.players) == 0:
             self.players.append({name: pin})
@@ -45,6 +45,7 @@ class Game:
             self.board.push(chess.Move.from_uci(move))
         except:
             raise DefaultError("Invalid move!", status_code=403)
+        self.moves += 1
         print(self.board)
 
 
@@ -55,11 +56,12 @@ class PublicGame():
         # self.board = game.board
         self.moves = game.moves
 
-    def populate_players(self, players):
+    def populate_players(self, players):  # FIX
         pub_players = []
         for player in players:
-            for name in player:
-                pub_players.append(name)
+            while len(pub_players) < 2:
+                for name in player:
+                    pub_players.append(name)
         return pub_players
 
     def toJSON(self):
