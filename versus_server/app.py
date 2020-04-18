@@ -1,8 +1,11 @@
+import chess
+import chess.svg
 from flask import Flask, render_template, request, jsonify
+from markupsafe import Markup
 
 from versus_server.Classes import DefaultError, Game, PublicGame
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 games = []
 
 
@@ -57,22 +60,29 @@ def move():
     game = find_game(game_id)
     if game is None:
         raise DefaultError("Game not found!", status_code=404)
-    game.move(move_to_make, name, pin)
-    return str(game.board)
+    return game.move(move_to_make, name, pin)
 
 
-@app.route("/getCLIboard")
-def get_CLI_board():
-    return "Got CLI board."
+@app.route("/getboard")
+def get_board():
+    game_id = request.args.get("id")
+    game = find_game(game_id)
+    if not game:
+        raise DefaultError(message="Waiting for all players to join...", status_code=425)
+    if len(game.players) < 2:
+        raise DefaultError(message="Waiting for all players to join...", status_code=425)
+    svg = chess.svg.board(board=game.board, size=800)
+    return render_template("board.html", svg=Markup(svg), id=game_id, name1=game.players[0].name,
+                           name2=game.players[1].name)
 
 
 @app.route("/games")
 def get_games():
-    pub_games = []
+    ret_games = []
     for game in games:
-        pub_games.append(PublicGame(game).toJSON())
-    return jsonify(pub_games)
+        ret_games.append(PublicGame(game).to_json())
+    return jsonify(ret_games)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port="80")
