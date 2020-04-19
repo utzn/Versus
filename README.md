@@ -13,11 +13,8 @@
     * A unique game identifier
 
 * Example usage:
-    * /newgame?name=Alice&pin=mypin1  
-        responds with ab12cd34
-        
+    * /newgame?name=Alice&pin=mypin1        
     * /newgame?id=ab12cd34&name=bob&pin=mypin2  
-        responds with 0, indicating success in creating a new game 
         
 ### /move
 * HTTP GET - make a move in an existing game
