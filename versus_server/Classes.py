@@ -34,7 +34,7 @@ class Game:
 
     def add_player(self, name, pin):
         if len(self.players) == 2:
-            raise DefaultError("Game " + self.game_id + " is already full!", status_code=403)
+            raise DefaultError("Game " + self.game_id + " is already full.", status_code=403)
         if len(self.players) == 1:
             self.players.append(Player(name, pin))
             random.shuffle(self.players)
@@ -43,30 +43,30 @@ class Game:
 
     def move(self, move, name, pin):
         if self.game_state is GameState.FINISHED:
-            raise DefaultError("Game is already over!", status_code=403)
+            raise DefaultError("Game is already over.", status_code=403)
         else:
             if chess.Move.from_uci(move) in self.board.legal_moves:
                 if self.game_state is not GameState.IN_PROGRESS:
                     self.game_state = GameState.IN_PROGRESS
                 if self.players[self.no_of_moves % 2].name != name or self.players[self.no_of_moves % 2].pin != pin:
-                    raise DefaultError("It's not your turn (wrong name/pin combination)!", status_code=425)
+                    raise DefaultError("It's not your turn (wrong name/pin combination).", status_code=425)
                 try:
                     self.board.push(chess.Move.from_uci(move))
                     self.moves.append(move)
                     self.no_of_moves += 1
                     print(self.board)
                     if self.board.is_check():
-                        str(chess.Move.from_uci(move)) + "+"
+                        return str(chess.Move.from_uci(move)) + "+"
                     if self.board.is_checkmate():
-                        str(chess.Move.from_uci(move)) + "#"
+                        return str(chess.Move.from_uci(move)) + "#"
                     if self.board.is_variant_draw():
-                        str(chess.Move.from_uci(move)) + "="
+                        return str(chess.Move.from_uci(move)) + "="
                     return str(chess.Move.from_uci(move))
                 except:
-                    raise DefaultError("Can't move a piece from this square!", status_code=403)
+                    raise DefaultError("Can't move a piece from this square.", status_code=403)
 
             else:
-                raise DefaultError("Illegal move!", status_code=403)
+                raise DefaultError("Illegal move.", status_code=403)
 
 
 class GameState(Enum):

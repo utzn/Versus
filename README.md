@@ -29,11 +29,12 @@
     * pin: A passphrase to identify you when issuing commands (see /newgame).
 
 * Return value:
-    * A graphical board representation
+    * A confirmation of the submitted move, the resulting condition (check/mate/draw), or
+    * An error message in case of e.g. illegal moves
 
 * Example usage:
     * /move?id=ab12cd34&move=e2e4&name=Alice&pin=mypin1  
-        responds with  
+        results in  
         | # | a | b | c | d | e | f | g | h |  
         |---|---|---|---|---|---|---|---|---|  
         | 8 | r | n | b | q | k | b | n | r |  
@@ -46,7 +47,7 @@
         | 1 | R | N | B | Q | K | B | N | R |
         
     * /move?id=ab12cd34&move=e7e5&name=bob&pin=mypin2  
-        responds with  
+        results in  
         | # | a | b | c | d | e | f | g | h |  
         |---|---|---|---|---|---|---|---|---|  
         | 8 | r | n | b | q | k | b | n | r |  

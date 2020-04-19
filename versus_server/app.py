@@ -59,7 +59,7 @@ def move():
     pin = request.args.get("pin")
     game = find_game(game_id)
     if game is None:
-        raise DefaultError("Game not found!", status_code=404)
+        raise DefaultError("Game not found.", status_code=404)
     return game.move(move_to_make, name, pin)
 
 
@@ -83,6 +83,15 @@ def get_games():
         ret_games.append(PublicGame(game).to_json())
     return jsonify(ret_games)
 
+
+@app.route("/delete")
+def delete_game():
+    game_id = request.args.get("id")
+    for idx, game in enumerate(games):
+        if game.game_id == game_id:
+            games.remove(idx)
+            return str(0)
+    raise DefaultError(message="Could not find game " + game_id + ".", status_code=404)
 
 if __name__ == '__main__':
     app.run(port="80")
