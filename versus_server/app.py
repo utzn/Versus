@@ -105,7 +105,7 @@ def get_games():
 @app.route("/delete")
 def delete_game():
     game_id = request.args.get("id")
-    if not pin:
+    if not game_id:
         raise DefaultError(message="Please enter a game ID.", status_code=404)
     pin = request.args.get("pin")
     if not pin:
