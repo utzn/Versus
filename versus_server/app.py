@@ -45,10 +45,8 @@ def new_game():
         for game in games:
             if new_game_id == game.game_id:
                 game.add_player(name, pin)
-                break
-            else:
-                raise DefaultError(message="Please provide a valid game ID.", status_code=404)
-        return Response(game.game_id, "Joined game").to_json()
+                return Response(new_game_id, "Joined game").to_json()
+        raise DefaultError(message="Please provide a valid game ID.", status_code=404)
 
 
 @app.route("/move")
@@ -70,6 +68,7 @@ def get_board():
     game = find_game(game_id)
     if not game:
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
+
     if len(game.players) < 2:
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
     view = request.args.get("view")
@@ -92,10 +91,15 @@ def get_fen():
 
 @app.route("/games")
 def get_games():
-    ret_games = []
-    for game in games:
-        ret_games.append(PublicGame(game).to_json())
-    return jsonify(ret_games)
+    game_id = request.args.get("id")
+    if game_id:
+        game = find_game(game_id)
+        return PublicGame(game).to_json()
+    else:
+        ret_games = []
+        for game in games:
+            ret_games.append(PublicGame(game).to_json())
+        return jsonify(ret_games)
 
 
 @app.route("/delete")

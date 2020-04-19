@@ -108,7 +108,6 @@ class PublicGame:
         # self.board = game.board
         self.game_state = str(game.game_state.name)
         self.moves = game.moves
-        print("Hol' up")
 
     def populate_players(self, players):
         pub_players = []
