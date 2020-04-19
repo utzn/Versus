@@ -39,7 +39,7 @@ def new_game():
 def move():
     print("Enter a move in UCI notation:")
     choice = str(input())
-    r = requests.get(url=args.url + "/move?id=" + game_id + "&move=" + choice + "name=" + args.name + "&pin=" + pin)
+    r = requests.get(url=args.url + "/move?id=" + game_id + "&move=" + choice + "&name=" + args.name + "&pin=" + pin)
     if r.status_code != 200:
         print(r.json()["message"])
     print("Waiting for other player...")
