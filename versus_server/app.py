@@ -3,7 +3,7 @@ import chess.svg
 from flask import Flask, render_template, request, jsonify
 from markupsafe import Markup
 
-from versus_server.Classes import DefaultError, Game, PublicGame
+from versus_server.Classes import DefaultError, Game, PublicGame, Response
 
 app = Flask(__name__, template_folder='templates')
 games = []
@@ -38,7 +38,7 @@ def new_game():
         game = Game()
         game.add_player(name, pin)
         games.append(game)
-        return game.game_id
+        return Response(game.game_id, "Created new game").to_json()
     else:
         if len(games) == 0:
             raise DefaultError(message="Please provide a valid game ID.", status_code=404)
@@ -48,7 +48,7 @@ def new_game():
                 break
             else:
                 raise DefaultError(message="Please provide a valid game ID.", status_code=404)
-        return str(0)
+        return Response(game.game_id, "Joined game").to_json()
 
 
 @app.route("/move")
@@ -60,7 +60,8 @@ def move():
     game = find_game(game_id)
     if game is None:
         raise DefaultError("Game not found.", status_code=404)
-    return game.move(move_to_make, name, pin)
+    r = Response(game.game_id, "Successfully made move" + move_to_make)
+    return r.to_json()
 
 
 @app.route("/getboard")
@@ -71,9 +72,22 @@ def get_board():
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
     if len(game.players) < 2:
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
-    svg = chess.svg.board(board=game.board, size=800)
+    view = request.args.get("view")
+    if view == "flipped":
+        svg = chess.svg.board(board=game.board, size=800, flipped=True)
+    else:
+        svg = chess.svg.board(board=game.board, size=800)
     return render_template("board.html", svg=Markup(svg), id=game_id, name1=game.players[0].name,
                            name2=game.players[1].name)
+
+
+@app.route("/getfen")
+def get_fen():
+    game_id = request.args.get("id")
+    game = find_game(game_id)
+    if not game:
+        raise DefaultError(message="Waiting for all players to join...", status_code=425)
+    return Response(game_id, str(game.board.fen()))
 
 
 @app.route("/games")
@@ -95,7 +109,7 @@ def delete_game():
             for player in game.players:
                 if player.pin == pin:
                     games.remove(game)
-                    return str(0)
+                    return Response(game.game_id, "Successfully deleted game")
             raise DefaultError(message="The pin " + pin + " is not associated with any player.", status_code=404)
     raise DefaultError(message="Could not find game " + game_id + ".", status_code=404)
 
