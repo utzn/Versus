@@ -105,6 +105,8 @@ def get_games():
 @app.route("/delete")
 def delete_game():
     game_id = request.args.get("id")
+    if not pin:
+        raise DefaultError(message="Please enter a game ID.", status_code=404)
     pin = request.args.get("pin")
     if not pin:
         raise DefaultError(message="Please enter a participants' pin to delete game " + game_id + ".", status_code=404)
@@ -113,7 +115,7 @@ def delete_game():
             for player in game.players:
                 if player.pin == pin:
                     games.remove(game)
-                    return Response(game.game_id, "Successfully deleted game")
+                    return Response(game.game_id, "Successfully deleted game").to_json()
             raise DefaultError(message="The pin " + pin + " is not associated with any player.", status_code=404)
     raise DefaultError(message="Could not find game " + game_id + ".", status_code=404)
 
