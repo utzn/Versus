@@ -58,8 +58,8 @@ def move():
     game = find_game(game_id)
     if game is None:
         raise DefaultError("Game not found.", status_code=404)
-    r = Response(game.game_id, "Successfully made move" + move_to_make)
-    return r.to_json()
+    finished_move = game.move(move_to_make, name, pin)
+    return Response(game.game_id, "Successfully made move " + finished_move).to_json()
 
 
 @app.route("/getboard")
@@ -86,7 +86,7 @@ def get_fen():
     game = find_game(game_id)
     if not game:
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
-    return Response(game_id, str(game.board.fen()))
+    return Response(game_id, str(game.board.fen())).to_json()
 
 
 @app.route("/games")

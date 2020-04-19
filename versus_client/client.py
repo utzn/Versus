@@ -64,9 +64,9 @@ def is_my_turn():
     r = requests.get(url=args.url + "/games?&id=" + game_id)
     response = r.json()
     for idx, player in enumerate(response["players"]):
-        if player.name == args.name:
+        if player == args.name:
             turn = idx % 2
-    return len(response["moves"]) % 2 == turn
+            return len(response["moves"]) % 2 == turn
 
 
 pin = str(uuid.uuid4())
