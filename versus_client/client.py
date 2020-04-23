@@ -13,6 +13,11 @@ parser.add_argument("-n", "--name",
                     help="display name",
                     default="Default",
                     dest="name")
+parser.add_argument("-c", "--computer",
+                    help="display name",
+                    default="Default",
+                    dest="name")
+
 args = parser.parse_args()
 
 
@@ -80,6 +85,7 @@ def is_my_turn():
             return len(response["moves"]) % 2 == turn
 
 
+human_mode = is_player_human()
 pin = str(uuid.uuid4())
 try:
     game_id = new_game()

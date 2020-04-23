@@ -52,7 +52,7 @@ class Game:
             self.players.append(Player(name, pin))
 
     def move(self, move, name, pin):
-        if self.game_state is GameState.FINISHED:
+        if self.game_state != GameState.INITIAL_POS and self.game_state != GameState.IN_PROGRESS:
             raise DefaultError("Game is already over.", status_code=403)
         else:
             if self.players[self.no_of_moves % 2].name != name or self.players[self.no_of_moves % 2].pin != pin:
