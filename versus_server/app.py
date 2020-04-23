@@ -94,11 +94,11 @@ def get_games():
     game_id = request.args.get("id")
     if game_id:
         game = find_game(game_id)
-        return PublicGame(game).to_json()
+        return jsonify(PublicGame(game).__dict__)
     else:
-        ret_games = {}
+        ret_games = []
         for game in games:
-            ret_games.update({"id": game.game_id, "game": PublicGame(game).__dict__})
+            ret_games.append({"id": game.game_id, "game": PublicGame(game, False).__dict__})
         return jsonify(ret_games)
 
 

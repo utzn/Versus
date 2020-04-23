@@ -102,8 +102,9 @@ class Player:
 
 
 class PublicGame:
-    def __init__(self, game: Game):
-        self.game_id = game.game_id
+    def __init__(self, game: Game, include_id=True):
+        if include_id:
+            self.game_id = game.game_id
         self.players = self.populate_players(game.players)
         # self.board = game.board
         self.game_state = str(game.game_state.name)
