@@ -3,7 +3,7 @@ import chess.svg
 from flask import Flask, render_template, request, jsonify
 from markupsafe import Markup
 
-from versus_server.Classes import DefaultError, Game, PublicGame, Response
+from versus_server.Classes import DefaultError, Game, PublicGame
 
 app = Flask(__name__, template_folder='templates')
 games = []
@@ -38,14 +38,14 @@ def new_game():
         game = Game()
         game.add_player(name, pin)
         games.append(game)
-        return Response(game.game_id, "Created new game").to_json()
+        return jsonify({"id": game.game_id, "message": "Created new game"})
     else:
         if len(games) == 0:
             raise DefaultError(message="Please provide a valid game ID.", status_code=404)
         for game in games:
             if new_game_id == game.game_id:
                 game.add_player(name, pin)
-                return Response(new_game_id, "Joined game").to_json()
+                return jsonify({"id": new_game_id, "message": "Joined game"})
         raise DefaultError(message="Please provide a valid game ID.", status_code=404)
 
 
@@ -59,7 +59,7 @@ def move():
     if game is None:
         raise DefaultError("Game not found.", status_code=404)
     finished_move = game.move(move_to_make, name, pin)
-    return Response(game.game_id, "Successfully made move " + finished_move).to_json()
+    return jsonify({"id": game_id, "message": "Successfully made move " + finished_move})
 
 
 @app.route("/getboard")
@@ -86,7 +86,7 @@ def get_fen():
     game = find_game(game_id)
     if not game:
         raise DefaultError(message="Waiting for all players to join...", status_code=425)
-    return Response(game_id, str(game.board.fen())).to_json()
+    return jsonify({"id": game_id, "fen": str(game.board.fen())})
 
 
 @app.route("/games")
@@ -96,9 +96,9 @@ def get_games():
         game = find_game(game_id)
         return PublicGame(game).to_json()
     else:
-        ret_games = []
+        ret_games = {}
         for game in games:
-            ret_games.append(PublicGame(game).to_json())
+            ret_games.update({"id": game.game_id, "game": PublicGame(game).__dict__})
         return jsonify(ret_games)
 
 
@@ -115,7 +115,8 @@ def delete_game():
             for player in game.players:
                 if player.pin == pin:
                     games.remove(game)
-                    return Response(game.game_id, "Successfully deleted game").to_json()
+
+                    return jsonify({"id": game.game_id, "message": "Successfully deleted game"})
             raise DefaultError(message="The pin " + pin + " is not associated with any player.", status_code=404)
     raise DefaultError(message="Could not find game " + game_id + ".", status_code=404)
 

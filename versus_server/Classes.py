@@ -114,7 +114,3 @@ class PublicGame:
         for player in players:
             pub_players.append(player.name)
         return pub_players
-
-    def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          sort_keys=True)
