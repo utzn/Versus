@@ -46,7 +46,8 @@ def new_game():
             if new_game_id == game.game_id:
                 if name == game.players[0].name:
                     game.add_player(name + "2", pin)
-                    return jsonify({"id": new_game_id, "message": "Joined game as " + name + "2."})
+                    return jsonify({"id": new_game_id, "message": "Joined game as " + name + " 2."})
+                game.add_player(name, pin)
                 return jsonify({"id": new_game_id, "message": "Joined game"})
         raise DefaultError(message="Please provide a valid game ID.", status_code=404)
 

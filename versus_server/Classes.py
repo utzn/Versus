@@ -81,7 +81,12 @@ class Game:
 class GameState(Enum):
     INITIAL_POS = 1
     IN_PROGRESS = 2
-    FINISHED = 3
+    WHITE_DRAW = 3
+    BLACK_DRAW = 4
+    WHITE_CHECK = 5
+    BLACK_CHECK = 6
+    WHITE_MATE = 7
+    BLACK_MATE = 8
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
