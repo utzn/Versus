@@ -44,7 +44,9 @@ def new_game():
             raise DefaultError(message="Please provide a valid game ID.", status_code=404)
         for game in games:
             if new_game_id == game.game_id:
-                game.add_player(name, pin)
+                if name == game.players[0].name:
+                    game.add_player(name + "2", pin)
+                    return jsonify({"id": new_game_id, "message": "Joined game as " + name + "2."})
                 return jsonify({"id": new_game_id, "message": "Joined game"})
         raise DefaultError(message="Please provide a valid game ID.", status_code=404)
 
