@@ -1,4 +1,5 @@
 import argparse
+import sys
 import uuid
 
 import requests
@@ -18,22 +19,32 @@ args = parser.parse_args()
 def new_game():
     print("1    -   Create new game")
     print("2    -   Join existing game")
+    local_game_id = None
     choice = int(input())
     if choice == 1:
-        r = requests.get(url=args.url + "/newgame?name=" + args.name + "&pin=" + pin)
+        try:
+            r = requests.get(url=args.url + "/newgame?name=" + args.name + "&pin=" + pin)
+        except:
+            print("Connection to " + args.url + " could not be established.")
+            raise
         local_game_id = r.json()["id"]
         print(r.json()["message"] + " " + r.json()["id"])
         print("Waiting for all players to join...")
-        return local_game_id
     if choice == 2:
         print("Please enter game ID:")
         local_game_id = str(input())
-        r = requests.get(
-            url=args.url + "/newgame?id=" + local_game_id + "&name=" + args.name + "&pin=" + pin)
-        response = r.json()
-        print(response["message"] + " " + response["id"])
-        return local_game_id
-    print("Please enter 1 or 2.")
+        try:
+            r = requests.get(
+                url=args.url + "/newgame?id=" + local_game_id + "&name=" + args.name + "&pin=" + pin)
+            response = r.json()
+            print(response["message"] + " " + response["id"])
+        except:
+            print("Connection to " + args.url + " could not be established.")
+            raise
+    return local_game_id
+
+
+print("Please enter 1 or 2.")
 
 
 def move():
@@ -70,7 +81,11 @@ def is_my_turn():
 
 
 pin = str(uuid.uuid4())
-game_id = new_game()
+try:
+    game_id = new_game()
+except:
+    sys.exit(-1)
+
 while not game_is_full():
     pass
 
