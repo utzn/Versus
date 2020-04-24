@@ -39,7 +39,6 @@ class Game:
         self.players = []
         self.moves = []
         self.board = chess.Board()
-        self.no_of_moves = 0
         self.game_state = GameState.INITIAL_POS
 
     def add_player(self, name, pin) -> None:
@@ -55,20 +54,29 @@ class Game:
         if self.game_state != GameState.INITIAL_POS and self.game_state != GameState.IN_PROGRESS:
             raise DefaultError("Game is already over.", status_code=403)
         else:
-            if self.players[self.no_of_moves % 2].name != name or self.players[self.no_of_moves % 2].pin != pin:
+            if self.players[len(self.moves) % 2].name != name or self.players[len(self.moves) % 2].pin != pin:
                 raise DefaultError("It's not your turn (wrong name/pin combination).", status_code=425)
             if chess.Move.from_uci(move) in self.board.legal_moves:
-                if self.game_state is not GameState.IN_PROGRESS:
+                if self.game_state is GameState.INITIAL_POS:
                     self.game_state = GameState.IN_PROGRESS
                 try:
                     self.board.push(chess.Move.from_uci(move))
                     self.moves.append(move)
                     self.no_of_moves += 1
                     if self.board.is_checkmate():
+                        if len(self.moves) % 2 == 0:
+                            self.game_state = GameState.WHITE_MATE
+                        else:
+                            self.game_state = GameState.BLACK_MATE
                         return str(chess.Move.from_uci(move)) + "#"
                     if self.board.is_check():
+                        if len(self.moves) % 2 == 0:
+                            self.game_state = GameState.WHITE_CHECK
+                        else:
+                            self.game_state = GameState.BLACK_CHECK
                         return str(chess.Move.from_uci(move)) + "+"
                     if self.board.is_variant_draw():
+                        self.game_state = GameState.DRAW
                         return str(chess.Move.from_uci(move)) + "="
                     return str(chess.Move.from_uci(move))
                 except:

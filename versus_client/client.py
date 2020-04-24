@@ -67,7 +67,7 @@ def calculate_move():
     response = r.json()["fen"]
     board = chess.Board(response)
     while not board.is_game_over():
-        result = engine.play(board, chess.engine.Limit(time=0.1))
+        result = engine.play(board, chess.engine.Limit(time=0.3), ponder=True)
         return str(result.move)
 
 
