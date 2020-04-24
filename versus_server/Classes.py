@@ -42,7 +42,7 @@ class Game:
         self.no_of_moves = 0
         self.game_state = GameState.INITIAL_POS
 
-    def add_player(self, name, pin):
+    def add_player(self, name, pin) -> None:
         if len(self.players) == 2:
             raise DefaultError("Game " + self.game_id + " is already full.", status_code=403)
         if len(self.players) == 1:
@@ -51,7 +51,7 @@ class Game:
         if len(self.players) == 0:
             self.players.append(Player(name, pin))
 
-    def move(self, move, name, pin):
+    def move(self, move, name, pin) -> str:
         if self.game_state != GameState.INITIAL_POS and self.game_state != GameState.IN_PROGRESS:
             raise DefaultError("Game is already over.", status_code=403)
         else:
@@ -81,12 +81,11 @@ class Game:
 class GameState(Enum):
     INITIAL_POS = 1
     IN_PROGRESS = 2
-    WHITE_DRAW = 3
-    BLACK_DRAW = 4
-    WHITE_CHECK = 5
-    BLACK_CHECK = 6
-    WHITE_MATE = 7
-    BLACK_MATE = 8
+    WHITE_CHECK = 3
+    BLACK_CHECK = 4
+    WHITE_MATE = 5
+    BLACK_MATE = 6
+    DRAW = 7
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -115,7 +114,8 @@ class PublicGame:
         self.game_state = str(game.game_state.name)
         self.moves = game.moves
 
-    def populate_players(self, players):
+    @staticmethod
+    def populate_players(players) -> []:
         pub_players = []
         for player in players:
             pub_players.append(player.name)

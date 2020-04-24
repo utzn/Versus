@@ -92,6 +92,15 @@ def get_fen():
     return jsonify({"id": game_id, "fen": str(game.board.fen())})
 
 
+# @app.route("/getpgn")
+# def get_pgn():
+#    game_id = request.args.get("id")
+#    game = find_game(game_id)
+#    if not game:
+#        raise DefaultError(message="Waiting for all players to join...", status_code=425)
+#    return jsonify({"id": game_id, "fen": str(game.board.boa)})
+
+
 @app.route("/games")
 def get_games():
     game_id = request.args.get("id")

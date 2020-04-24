@@ -2,6 +2,8 @@ import argparse
 import sys
 import uuid
 
+import chess
+import chess.engine
 import requests
 
 parser = argparse.ArgumentParser(description="Simple Versus client")
@@ -14,11 +16,20 @@ parser.add_argument("-n", "--name",
                     default="Default",
                     dest="name")
 parser.add_argument("-c", "--computer",
-                    help="display name",
-                    default="Default",
-                    dest="name")
+                    help="Specify whether computer mode is enabled or not",
+                    default="yes",
+                    dest="computer")
+parser.add_argument("-e", "--engine",
+                    help="Path to the chess engine which should be moved for move generation, if --computer is set to yes",
+                    default="stockfish_20011801_x64.exe",
+                    dest="engine")
 
 args = parser.parse_args()
+
+if args.computer == "yes":
+    human_mode = False
+else:
+    human_mode = True
 
 
 def new_game():
@@ -49,12 +60,24 @@ def new_game():
     return local_game_id
 
 
-print("Please enter 1 or 2.")
+def calculate_move():
+    engine = chess.engine.SimpleEngine.popen_uci(args.engine)
+    r = requests.get(
+        url=args.url + "/getfen?id=" + game_id)
+    response = r.json()["fen"]
+    board = chess.Board(response)
+    while not board.is_game_over():
+        result = engine.play(board, chess.engine.Limit(time=0.1))
+        return str(result.move)
 
 
 def move():
-    print("Enter a move in UCI notation:")
-    choice = str(input())
+    if human_mode:
+        print("Enter a move in UCI notation:")
+        choice = str(input())
+    else:
+        choice = calculate_move()
+        print("Engine made move " + choice)
     r = requests.get(url=args.url + "/move?id=" + game_id + "&move=" + choice + "&name=" + args.name + "&pin=" + pin)
     if r.status_code != 200:
         print(r.json()["message"])
@@ -85,7 +108,17 @@ def is_my_turn():
             return len(response["moves"]) % 2 == turn
 
 
-human_mode = is_player_human()
+def is_player_human():
+    print("Who is going to provide UCI moves for the upcoming game?")
+    print("1    -   Machine")
+    print("2    -   Human")
+    choice = input()
+    if choice == 1:
+        return False
+    else:
+        return True
+
+
 pin = str(uuid.uuid4())
 try:
     game_id = new_game()
