@@ -5,9 +5,9 @@
 ### /newgame
 * HTTP GET - create a new game
 * Parameters
-    * name: Your player name.
-    * pin: A passphrase to identify you when issuing commands.
-    * id (optional): The game ID. Leave empty when creating a new game, and enter when joining a game.
+    * name: Your player name
+    * pin: A passphrase to identify you when issuing commands
+    * id (optional): The game ID. Leave empty when creating a new game, and enter when joining a game
 
 * Return value:
     * A unique game identifier
@@ -19,10 +19,10 @@
 ### /move
 * HTTP GET - make a move in an existing game
 * Parameters
-    * id: The game you wish to make a move in.
+    * id: The game you wish to make a move in
     * move: Your move in extended algebraic notation (e.g. moving the white pawn from e2 to e4 -> e2e4)
-    * name: Your player name.
-    * pin: A passphrase to identify you when issuing commands (see /newgame).
+    * name: Your player name
+    * pin: A passphrase to identify you when issuing commands (see /newgame)
 
 * Return value:
     * A confirmation of the submitted move, the resulting condition (check/mate/draw)
@@ -57,19 +57,23 @@
         
 ### /games
 * HTTP GET - view a list of all current games on the server
+* Parameters
+    * id (optional): The game you wish to get information for
+
 * Return value:
-    * A list of all games currently happening on the server.  
-      The first player in a game's player list plays as white.
+    * A list of all games currently happening on the server  
+      The first player in a game's player list plays as white
+    * If id was provided: a game consisting of id, moves which have been played, and the connected players
       
 ### /getboard
 * HTTP GET - view an SVG rendering of a particular game
 * Parameters
     * id: The game you wish to view.
-    * view (optional): Set to "flipped" to view the game from black's perspective.
+    * view (optional): Set to "flipped" to view the game from black's perspective
     
 * Return value:
     * An SVG rendering of the game board corresponding to the id parameter.  
-      Currently, the website is updated once every second to reflect game updates.    
+      Currently, the website is updated once every second to reflect game updates  
     
 * Example usage:
     * /getboard?id=ab12cd34
@@ -78,6 +82,9 @@
 
 ### /getfen
 * HTTP GET - view an SVG rendering of a particular game
+* Parameters
+    * id: The game you wish to get the FEN notation for
+
 * Return value:
     * A FEN board representation
     
@@ -88,7 +95,7 @@
 * HTTP GET - removes an existing game from the server's database
 * Parameters
     * id: The game you wish to delete.
-    * pin: The pin of either of the players involved in the game.
+    * pin: The pin of either of the players involved in the game
     
 * Example usage:
     * /delete?id=ab12cd34&pin=1234
