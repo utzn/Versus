@@ -97,7 +97,9 @@ def get_games():
     game_id = request.args.get("id")
     if game_id:
         game = find_game(game_id)
-        return jsonify(PublicGame(game).__dict__)
+        if game:
+            return jsonify(PublicGame(game).__dict__)
+        raise DefaultError(message="Could not find game with requested game ID " + game_id, status_code=404)
     else:
         ret_games = []
         for game in games:
