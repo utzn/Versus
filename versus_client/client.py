@@ -61,7 +61,6 @@ def new_game():
 
 
 def calculate_move():
-    engine = chess.engine.SimpleEngine.popen_uci(args.engine)
     r = requests.get(
         url=args.url + "/getfen?id=" + game_id)
     response = r.json()["fen"]
@@ -119,6 +118,7 @@ def is_player_human():
         return True
 
 
+engine = chess.engine.SimpleEngine.popen_uci(args.engine)
 pin = str(uuid.uuid4())
 try:
     game_id = new_game()
@@ -131,3 +131,5 @@ while not game_is_full():
 while True:
     if is_my_turn():
         move()
+print("Game over.")
+engine.close()

@@ -62,7 +62,6 @@ class Game:
                 try:
                     self.board.push(chess.Move.from_uci(move))
                     self.moves.append(move)
-                    self.no_of_moves += 1
                     if self.board.is_checkmate():
                         if len(self.moves) % 2 == 0:
                             self.game_state = GameState.WHITE_MATE
@@ -79,7 +78,8 @@ class Game:
                         self.game_state = GameState.DRAW
                         return str(chess.Move.from_uci(move)) + "="
                     return str(chess.Move.from_uci(move))
-                except:
+                except Exception as e:
+                    print(e)
                     raise DefaultError("Can't move a piece from this square.", status_code=403)
 
             else:
